@@ -670,9 +670,11 @@ body {
       <div class="party-row" id="party-icons"></div>
     </div>
     <div class="hud-right">
-      <div class="hud-stat">💰 <span id="gold-disp">300</span> pearls</div>
-      <div class="hud-stat">🥤 <span id="cups-disp">5</span> cups</div>
-      <button class="hud-btn" onclick="showPartyScreen()">📋 MENU</button>
+      <div class="hud-stat">🪙 <span id="coins-disp">10</span> coins · 🥤 <span id="cups-disp">5</span></div>
+      <div style="display:flex;gap:5px">
+        <button class="hud-btn" onclick="showPartyScreen()">📋 MENU</button>
+        <button class="hud-btn" style="border-color:var(--matcha);color:var(--matcha)" onclick="showShop()">🛒 SHOP</button>
+      </div>
     </div>
   </div>
 </div>
@@ -729,6 +731,72 @@ body {
   <div class="screen-header">✦ YOUR COLLECTION ✦</div>
   <div class="party-scroll" id="party-list"></div>
   <button class="screen-close-btn" onclick="closePartyScreen()">CLOSE</button>
+</div>
+
+
+<!-- ══ SHOP ══ -->
+<div id="shop-screen" class="screen">
+  <div class="screen-header">🧋 BEAN'S BOBA BAR SHOP 🧋</div>
+  <div class="party-scroll">
+    <div style="text-align:center;padding:8px 0 14px;font-size:10px;color:var(--subtext);font-weight:700;">
+      Your Tapioca Coins: 🪙 <span id="shop-coins-disp">0</span>
+    </div>
+
+    <!-- Free Rest -->
+    <div class="cup-card" style="flex-direction:column;align-items:flex-start;gap:6px;border-color:var(--matcha);">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:32px">💤</span>
+        <div style="flex:1">
+          <div class="cup-name" style="color:var(--matcha)">Full Rest</div>
+          <div class="cup-meta">Fully heals all your bobas & restores PP</div>
+        </div>
+        <span style="font-size:11px;font-weight:900;color:var(--matcha)">FREE</span>
+      </div>
+      <button class="hud-btn" style="width:100%;border-color:var(--matcha);color:var(--matcha)" onclick="shopRest()">✨ REST PARTY</button>
+    </div>
+
+    <!-- Small Refill -->
+    <div class="cup-card" style="flex-direction:column;align-items:flex-start;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:32px">🧃</span>
+        <div style="flex:1">
+          <div class="cup-name">Boba Refill (Small)</div>
+          <div class="cup-meta">Restores 40 HP to one boba · You have: <span id="small-refill-count">0</span></div>
+        </div>
+        <span style="font-size:11px;font-weight:900;color:var(--brown)">🪙 5</span>
+      </div>
+      <button class="hud-btn" style="width:100%" onclick="shopBuy('small_refill')">BUY</button>
+    </div>
+
+    <!-- Full Refill -->
+    <div class="cup-card" style="flex-direction:column;align-items:flex-start;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:32px">🧋</span>
+        <div style="flex:1">
+          <div class="cup-name">Boba Refill (Full)</div>
+          <div class="cup-meta">Fully restores one boba's HP · You have: <span id="full-refill-count">0</span></div>
+        </div>
+        <span style="font-size:11px;font-weight:900;color:var(--brown)">🪙 12</span>
+      </div>
+      <button class="hud-btn" style="width:100%" onclick="shopBuy('full_refill')">BUY</button>
+    </div>
+
+    <!-- Extra Cups -->
+    <div class="cup-card" style="flex-direction:column;align-items:flex-start;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:32px">🥤</span>
+        <div style="flex:1">
+          <div class="cup-name">Collection Cup ×3</div>
+          <div class="cup-meta">3 cups for catching wild bobas · You have: <span id="shop-cups-count">0</span></div>
+        </div>
+        <span style="font-size:11px;font-weight:900;color:var(--brown)">🪙 8</span>
+      </div>
+      <button class="hud-btn" style="width:100%" onclick="shopBuy('cups')">BUY</button>
+    </div>
+
+    <div id="shop-msg" style="text-align:center;font-size:10px;font-weight:900;color:var(--berry);min-height:20px;padding:6px 0;"></div>
+  </div>
+  <button class="screen-close-btn" onclick="closeShop()">LEAVE SHOP</button>
 </div>
 
 </div><!-- /game-container -->
@@ -1018,6 +1086,8 @@ const LOCATIONS = [
 let G = {
   screen:'title',
   gold:300, cups:5,
+  coins:10,
+  items:{ small_refill:3, full_refill:1 },
   party:[],
   player:{ tx:0.15, ty:0.55 },
   steps:0,
@@ -1486,7 +1556,9 @@ function endBattle(result) {
     let msg = `🏆 ${boba.name} defeated ${G.enemy.name}!\n+${exp} EXP`;
     const gold = G.enemy.level*6;
     G.gold += gold;
-    msg += ` +${gold} pearls`;
+    const coins = Math.max(1, Math.floor(G.enemy.level*1.5));
+    G.coins += coins;
+    msg += ` +${gold} pearls +${coins}🪙`;
 
     if(boba.exp >= boba.expToNext) {
       boba.level++; boba.exp=0; boba.expToNext=boba.level*18+40;
@@ -1518,6 +1590,7 @@ function endBattle(result) {
 
   } else if(result==='caught') {
     G.gold += G.enemy.level*4;
+    G.coins += Math.max(1, Math.floor(G.enemy.level*0.8));
     showScreen('overworld'); updateHUD();
 
   } else if(result==='run') {
@@ -1549,6 +1622,10 @@ function showPartyScreen(fromBattle=false) {
         </div>
         <div class="cup-hp">${Math.max(0,boba.hp)}/${boba.maxHp} · ATK:${boba.atk} DEF:${boba.def} SPD:${boba.spd}</div>
         <div class="moves-list">Moves: ${boba.moves.join(' · ')}</div>
+        ${!fromBattle && (G.items.small_refill>0||G.items.full_refill>0) ? `<div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap">
+          ${G.items.small_refill>0 ? `<button class="hud-btn" style="font-size:7px;padding:4px 7px" onclick="event.stopPropagation();useItemOnBoba(${i},'small_refill')">🧃 Refill (×${G.items.small_refill})</button>` : ''}
+          ${G.items.full_refill>0 ? `<button class="hud-btn" style="font-size:7px;padding:4px 7px;border-color:var(--matcha)" onclick="event.stopPropagation();useItemOnBoba(${i},'full_refill')">🧋 Full (×${G.items.full_refill})</button>` : ''}
+        </div>` : ''}
       </div>`;
     if(fromBattle && !boba.fainted && boba.hp>0 && i!==G.currentBobaIdx) {
       card.onclick=()=>switchBoba(i);
@@ -1581,6 +1658,7 @@ function closePartyScreen() {
 // ═══════════════════════════════════════════
 function updateHUD() {
   document.getElementById('gold-disp').textContent = G.gold;
+  if(document.getElementById('coins-disp')) document.getElementById('coins-disp').textContent = G.coins;
   document.getElementById('cups-disp').textContent = G.cups;
   const row = document.getElementById('party-icons');
   row.innerHTML='';
@@ -1592,6 +1670,66 @@ function updateHUD() {
     s.onclick=()=>showPartyScreen();
     row.appendChild(s);
   });
+}
+
+// ═══════════════════════════════════════════
+// SHOP & ITEMS
+// ═══════════════════════════════════════════
+function showShop() {
+  document.getElementById('shop-coins-disp').textContent = G.coins;
+  document.getElementById('small-refill-count').textContent = G.items.small_refill;
+  document.getElementById('full-refill-count').textContent = G.items.full_refill;
+  document.getElementById('shop-cups-count').textContent = G.cups;
+  document.getElementById('shop-msg').textContent = '';
+  showScreen('shop');
+}
+
+function closeShop() {
+  showScreen('overworld');
+  updateHUD();
+}
+
+function shopRest() {
+  G.party.forEach(m => {
+    m.hp = m.maxHp;
+    m.fainted = false;
+    m.atkMod=1; m.defMod=1; m.spdMod=1; m.accMod=1;
+    m.moves.forEach(mv => { m.pp[mv] = MOVES_DATA[mv]?.pp || 20; });
+  });
+  document.getElementById('shop-msg').textContent = '✨ All bobas fully refreshed!';
+  showShop();
+}
+
+function shopBuy(item) {
+  const prices = { small_refill:5, full_refill:12, cups:8 };
+  const cost = prices[item];
+  if (G.coins < cost) {
+    document.getElementById('shop-msg').textContent = `Not enough coins! Need 🪙${cost}`;
+    return;
+  }
+  G.coins -= cost;
+  if (item === 'small_refill') { G.items.small_refill++; document.getElementById('shop-msg').textContent = '🧃 Got a Small Boba Refill!'; }
+  else if (item === 'full_refill') { G.items.full_refill++; document.getElementById('shop-msg').textContent = '🧋 Got a Full Boba Refill!'; }
+  else if (item === 'cups') { G.cups += 3; document.getElementById('shop-msg').textContent = '🥤 Got 3 Collection Cups!'; }
+  showShop();
+}
+
+// Use items from party screen (overworld only)
+function useItemOnBoba(bobaIdx, itemType) {
+  const boba = G.party[bobaIdx];
+  if (!boba || boba.fainted) return;
+  if (itemType === 'small_refill') {
+    if (G.items.small_refill <= 0) return;
+    if (boba.hp >= boba.maxHp) { alert('HP is already full!'); return; }
+    G.items.small_refill--;
+    boba.hp = Math.min(boba.maxHp, boba.hp + 40);
+  } else if (itemType === 'full_refill') {
+    if (G.items.full_refill <= 0) return;
+    G.items.full_refill--;
+    boba.hp = boba.maxHp;
+    boba.fainted = false;
+  }
+  showPartyScreen(_partyFromBattle);
 }
 
 // ═══════════════════════════════════════════
