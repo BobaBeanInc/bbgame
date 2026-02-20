@@ -1714,7 +1714,7 @@ function closePartyScreen() {
 // HUD
 // ═══════════════════════════════════════════
 function updateHUD() {
-  document.getElementById('gold-disp').textContent = G.gold;
+  if(document.getElementById('gold-disp')) document.getElementById('gold-disp').textContent = G.gold;
   if(document.getElementById('coins-disp')) document.getElementById('coins-disp').textContent = G.coins;
   document.getElementById('cups-disp').textContent = G.cups;
   const row = document.getElementById('party-icons');
