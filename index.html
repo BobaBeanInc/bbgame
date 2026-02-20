@@ -36,13 +36,19 @@ body {
   font-family: 'Nunito', sans-serif;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 10px;
 }
 
 #game-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 #game-container {
@@ -56,6 +62,49 @@ body {
     0 0 60px rgba(200,150,92,0.4);
   overflow: hidden;
   background: var(--cream);
+  transform-origin: top center;
+  transition: transform 0.2s ease;
+}
+
+/* Zoom controls */
+#zoom-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: rgba(92,61,46,0.85);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 10px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.zoom-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  width: 30px; height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: var(--cream);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.zoom-btn:active { background: rgba(255,255,255,0.35); }
+#zoom-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--cream);
+  min-width: 34px;
+  text-align: center;
 }
 
 /* ── pixel font helper ── */
@@ -800,6 +849,14 @@ body {
 </div>
 
 </div><!-- /game-container -->
+</div>
+
+<!-- Zoom controls — fixed bottom center, out of the way -->
+<div id="zoom-controls">
+  <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom out">−</button>
+  <span id="zoom-label">100%</span>
+  <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom in">+</button>
+  <button class="zoom-btn" onclick="resetZoom()" title="Auto fit" style="font-size:9px;width:36px;border-radius:12px">FIT</button>
 </div>
 
 <script>
@@ -1797,6 +1854,38 @@ document.addEventListener('touchend', e => {
   }
   _ts = null;
 }, { passive: true });
+
+// ═══════════════════════════════════════════
+// ZOOM / SCALE
+// ═══════════════════════════════════════════
+let _zoom = 1.0;
+
+function applyZoom(z) {
+  _zoom = Math.min(1.2, Math.max(0.4, z));
+  document.getElementById('game-container').style.transform = `scale(${_zoom})`;
+  document.getElementById('zoom-label').textContent = Math.round(_zoom * 100) + '%';
+  // Adjust game-wrap height so page doesn't scroll awkwardly
+  const gc = document.getElementById('game-container');
+  gc.parentElement.style.height = (660 * _zoom + 60) + 'px';
+}
+
+function adjustZoom(delta) {
+  applyZoom(_zoom + delta);
+}
+
+function resetZoom() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  // Leave room for zoom bar (50px) and some padding (20px)
+  const fitScale = Math.min(vw / 490, (vh - 70) / 670);
+  applyZoom(Math.min(1.0, fitScale));
+}
+
+// Auto-fit on load and on resize
+window.addEventListener('resize', resetZoom);
+// Run after a short delay to ensure layout is settled
+setTimeout(resetZoom, 100);
+
 </script>
 </body>
 </html>
