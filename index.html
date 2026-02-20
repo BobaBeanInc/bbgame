@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Boba Quest NC 🧋</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap');
@@ -595,24 +595,27 @@ body {
   bottom:78px;
   right:10px;
   display:grid;
-  grid-template-columns:repeat(3,30px);
-  grid-template-rows:repeat(3,30px);
+  grid-template-columns:repeat(3,44px);
+  grid-template-rows:repeat(3,44px);
   gap:3px;
   z-index:30;
-  opacity:0.75;
+  opacity:0.85;
+  touch-action: none;
 }
 .dpad-btn {
-  background:rgba(92,61,46,0.18);
-  border:1.5px solid rgba(92,61,46,0.3);
-  border-radius:6px;
+  background:rgba(92,61,46,0.22);
+  border:2px solid rgba(92,61,46,0.35);
+  border-radius:8px;
   color:var(--brown);
-  font-size:13px;
+  font-size:16px;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   user-select:none;-webkit-user-select:none;
-  transition:background 0.1s;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:background 0.08s;
 }
-.dpad-btn:active{background:rgba(92,61,46,0.4)}
+.dpad-btn:active{background:rgba(92,61,46,0.5)}
 
 /* type colors for moves */
 .t-taro     { background: #c5a3d4; color: #3a2016; }
@@ -1598,28 +1601,64 @@ function buildDpad() {
   const vp = document.getElementById('map-viewport');
   const dpad = document.createElement('div');
   dpad.id='dpad';
-  dpad.innerHTML=`
-    <div></div>
-    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(0,-1)">▲</button>
-    <div></div>
-    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(-1,0)">◄</button>
-    <div></div>
-    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(1,0)">►</button>
-    <div></div>
-    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(0,1)">▼</button>
-    <div></div>`;
+
+  // Create buttons with touchstart for instant response (no click delay/zoom)
+  const dirs = [
+    null,
+    { label:'▲', dx:0, dy:-1 },
+    null,
+    { label:'◄', dx:-1, dy:0 },
+    null,
+    { label:'►', dx:1, dy:0 },
+    null,
+    { label:'▼', dx:0, dy:1 },
+    null,
+  ];
+
+  dirs.forEach(dir => {
+    const el = document.createElement(dir ? 'button' : 'div');
+    if (dir) {
+      el.className = 'dpad-btn';
+      el.textContent = dir.label;
+      el.setAttribute('aria-label', dir.label);
+      // Use touchstart for immediate response, prevent default to stop zoom/scroll
+      el.addEventListener('touchstart', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (G.screen === 'overworld') movePlayer(dir.dx, dir.dy);
+      }, { passive: false });
+      // Fallback for mouse
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        if (G.screen === 'overworld') movePlayer(dir.dx, dir.dy);
+      });
+    }
+    dpad.appendChild(el);
+  });
+
   vp.appendChild(dpad);
 }
 
-// Touch support
+// Swipe support — only fires when NOT touching a dpad button
 let _ts=null;
-document.addEventListener('touchstart',e=>{if(G.screen==='overworld')_ts={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(!_ts||G.screen!=='overworld')return;
-  const dx=e.changedTouches[0].clientX-_ts.x,dy=e.changedTouches[0].clientY-_ts.y;
-  if(Math.abs(dx)>Math.abs(dy)){movePlayer(dx>0?1:-1,0);}else{movePlayer(0,dy>0?1:-1);}
-  _ts=null;
-},{passive:true});
+let _touchOnDpad=false;
+document.addEventListener('touchstart', e => {
+  if (G.screen !== 'overworld') return;
+  _touchOnDpad = !!e.target.closest('#dpad');
+  if (!_touchOnDpad) _ts = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!_ts || _touchOnDpad || G.screen !== 'overworld') { _ts=null; return; }
+  const dx = e.changedTouches[0].clientX - _ts.x;
+  const dy = e.changedTouches[0].clientY - _ts.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist > 20) { // minimum swipe distance
+    if (Math.abs(dx) > Math.abs(dy)) { movePlayer(dx > 0 ? 1 : -1, 0); }
+    else { movePlayer(0, dy > 0 ? 1 : -1); }
+  }
+  _ts = null;
+}, { passive: true });
 </script>
 </body>
 </html>
