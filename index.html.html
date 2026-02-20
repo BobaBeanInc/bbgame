@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boba Quest NC 🧋</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap');
+
+:root {
+  --cream:    #fdf6ec;
+  --latte:    #c8965c;
+  --brown:    #5c3d2e;
+  --deepbrown:#3a2016;
+  --blush:    #f4a7b9;
+  --taro:     #c5a3d4;
+  --matcha:   #8fbc8b;
+  --mango:    #f5c842;
+  --berry:    #c75b7a;
+  --sky:      #a8d8ea;
+  --sand:     #e8d5b7;
+  --panel:    #fff9f0;
+  --border:   #d4a97a;
+  --shadow:   rgba(92,61,46,0.18);
+  --text:     #3a2016;
+  --subtext:  #7a5c3e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #e8d5b7;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(245,200,66,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(197,163,212,0.2) 0%, transparent 50%);
+  font-family: 'Nunito', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-wrap {
+  position: relative;
+}
+
+#game-container {
+  width: 480px;
+  height: 660px;
+  position: relative;
+  border: 5px solid var(--brown);
+  border-radius: 20px;
+  box-shadow:
+    8px 8px 0 var(--deepbrown),
+    0 0 60px rgba(200,150,92,0.4);
+  overflow: hidden;
+  background: var(--cream);
+}
+
+/* ── pixel font helper ── */
+.px { font-family: 'Press Start 2P', monospace; }
+
+/* ══════════════════════════════
+   SCREENS
+══════════════════════════════ */
+.screen {
+  position: absolute;
+  width: 100%; height: 100%;
+  display: none;
+  flex-direction: column;
+  background: var(--cream);
+}
+.screen.active { display: flex; }
+
+/* ══════════════════════════════
+   TITLE SCREEN
+══════════════════════════════ */
+#title-screen {
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #fdf6ec 0%, #f5e6cc 50%, #eedbb8 100%);
+  gap: 10px;
+  padding: 20px;
+}
+
+.shop-sign {
+  background: var(--brown);
+  color: var(--cream);
+  border-radius: 12px;
+  padding: 14px 24px;
+  text-align: center;
+  box-shadow: 4px 4px 0 var(--deepbrown);
+  border: 3px solid var(--deepbrown);
+  position: relative;
+}
+.shop-sign::before,.shop-sign::after {
+  content:'🔩';
+  position:absolute;
+  top:6px;
+  font-size:14px;
+}
+.shop-sign::before{left:8px}
+.shop-sign::after{right:8px}
+
+.shop-sign h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  text-shadow: 2px 2px 0 var(--deepbrown);
+  letter-spacing: 1px;
+}
+.shop-sign p {
+  font-size: 11px;
+  color: var(--mango);
+  margin-top: 4px;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 1px 1px 0 var(--deepbrown);
+}
+
+.title-boba {
+  font-size: 88px;
+  animation: bobble 3s ease-in-out infinite;
+  filter: drop-shadow(4px 4px 0 rgba(92,61,46,0.3));
+  line-height: 1;
+}
+@keyframes bobble {
+  0%,100%{transform:translateY(0) rotate(-3deg)}
+  50%{transform:translateY(-14px) rotate(3deg)}
+}
+
+.nc-badge {
+  background: var(--matcha);
+  color: white;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border: 2px solid var(--brown);
+  box-shadow: 2px 2px 0 var(--brown);
+}
+
+.title-flavor-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 4px 0;
+}
+.flavor-bubble {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--brown);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  animation: pop 1.5s ease-in-out infinite;
+  box-shadow: 2px 2px 0 var(--brown);
+}
+.flavor-bubble:nth-child(1){background:#f4a7b9;animation-delay:0s}
+.flavor-bubble:nth-child(2){background:#c5a3d4;animation-delay:0.2s}
+.flavor-bubble:nth-child(3){background:#8fbc8b;animation-delay:0.4s}
+.flavor-bubble:nth-child(4){background:#f5c842;animation-delay:0.6s}
+.flavor-bubble:nth-child(5){background:#a8d8ea;animation-delay:0.8s}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+.press-start {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--berry);
+  animation: blink 1s step-end infinite;
+  margin-top: 6px;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.title-sub {
+  font-size: 10px;
+  color: var(--subtext);
+  font-weight: 700;
+}
+
+/* ══════════════════════════════
+   OVERWORLD
+══════════════════════════════ */
+#overworld-screen { background: var(--cream); }
+
+#map-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+#map-canvas { position: absolute; image-rendering: pixelated; }
+
+#player-sprite {
+  position: absolute;
+  font-size: 26px;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(2px 3px 0 rgba(92,61,46,0.4));
+  transition: none;
+}
+
+.step-anim { animation: waddlestep 0.18s linear; }
+@keyframes waddlestep {
+  0%{transform:translate(-50%,-50%) rotate(0deg)}
+  25%{transform:translate(-50%,-54%) rotate(-6deg)}
+  75%{transform:translate(-50%,-54%) rotate(6deg)}
+  100%{transform:translate(-50%,-50%) rotate(0deg)}
+}
+
+#overworld-hud {
+  background: var(--panel);
+  border-top: 3px solid var(--border);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-left { display: flex; flex-direction: column; gap: 4px; }
+#location-label {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--brown);
+}
+.party-row { display: flex; gap: 6px; }
+.party-icon {
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  filter: drop-shadow(1px 1px 0 var(--border));
+}
+.party-icon:hover{transform:scale(1.2) rotate(-5deg)}
+.party-icon.fainted{filter:grayscale(1) opacity(0.4)}
+
+.hud-right { display:flex;flex-direction:column;align-items:flex-end;gap:5px; }
+.hud-stat {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--brown);
+}
+.hud-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  padding: 5px 9px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--cream);
+  color: var(--brown);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--border);
+  transition: all 0.1s;
+}
+.hud-btn:hover { background: var(--sand); transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--border); }
+
+/* message box */
+#message-box {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--panel);
+  border-top: 3px solid var(--border);
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 68px;
+  display: none;
+  z-index: 20;
+  border-radius: 0 0 0 0;
+}
+#message-box.visible { display: block; }
+#message-box .cont { float:right; color:var(--berry); animation:blink 0.5s step-end infinite; }
+
+/* ══════════════════════════════
+   BATTLE SCREEN
+══════════════════════════════ */
+#battle-screen { background: var(--cream); }
+
+#battle-scene {
+  height: 270px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 3px solid var(--border);
+}
+
+/* Layered background: cafe interior feel */
+.battle-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg,
+      #d4e8f0 0%, #c5dce8 30%,
+      #e8d5b7 30%, #e8d5b7 65%,
+      #c8965c 65%, #c8965c 100%);
+}
+.battle-bg::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 40px, transparent 40px, transparent 80px);
+}
+/* window */
+.battle-window {
+  position:absolute;
+  top:12px; left:50%;
+  transform:translateX(-50%);
+  width:80px; height:55px;
+  background: linear-gradient(135deg,#c5dce8,#a8d8ea);
+  border:3px solid var(--brown);
+  border-radius:4px;
+}
+.battle-window::before,.battle-window::after {
+  content:'';
+  position:absolute;
+  background:rgba(255,255,255,0.3);
+}
+.battle-window::before{width:2px;height:100%;left:50%;transform:translateX(-50%)}
+.battle-window::after{height:2px;width:100%;top:50%;transform:translateY(-50%)}
+
+/* enemy cup */
+#enemy-area {
+  position: absolute;
+  top: 18px;
+  right: 50px;
+  text-align: center;
+}
+#enemy-sprite {
+  font-size: 68px;
+  display: block;
+  animation: enemy-enter 0.5s cubic-bezier(.34,1.56,.64,1);
+  filter: drop-shadow(3px 3px 0 rgba(92,61,46,0.3));
+}
+@keyframes enemy-enter {0%{transform:translateX(80px) scale(0.5);opacity:0}100%{transform:none;opacity:1}}
+
+/* player cup */
+#player-battle-sprite {
+  position: absolute;
+  bottom: 48px;
+  left: 40px;
+  font-size: 58px;
+  animation: player-enter 0.5s cubic-bezier(.34,1.56,.64,1);
+  filter: drop-shadow(3px 3px 0 rgba(92,61,46,0.3));
+}
+@keyframes player-enter{0%{transform:translateX(-60px) scale(0.5);opacity:0}100%{transform:none;opacity:1}}
+
+/* info cards */
+.battle-info-card {
+  position: absolute;
+  background: var(--panel);
+  border: 2.5px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 170px;
+  box-shadow: 3px 3px 0 var(--border);
+}
+#enemy-info { top: 14px; left: 14px; }
+#player-info { bottom: 12px; right: 14px; }
+
+.card-name { font-size: 10px; font-weight: 900; color: var(--brown); margin-bottom: 2px; }
+.card-meta { font-size: 8px; color: var(--subtext); margin-bottom: 7px; }
+.hp-row { display:flex; align-items:center; gap:6px; }
+.hp-tag { font-size: 8px; font-weight: 900; color: var(--brown); }
+.hp-bar { flex:1; height:7px; background:#e0cbb0; border-radius:4px; border:1.5px solid var(--border); overflow:hidden; }
+.hp-fill { height:100%; border-radius:3px; background: var(--matcha); transition: width 0.5s ease, background 0.5s; }
+.hp-fill.mid  { background: var(--mango); }
+.hp-fill.low  { background: var(--berry); }
+.hp-nums { font-size: 8px; font-weight: 900; color: var(--subtext); margin-top: 3px; text-align:right; }
+
+/* catch overlay */
+#catch-overlay {
+  position:absolute;
+  inset:0;
+  background:rgba(253,246,236,0.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:50;
+  gap:14px;
+}
+#catch-overlay.visible{display:flex}
+.straw-spin { font-size:56px; animation:spin 0.6s linear infinite; }
+@keyframes spin{to{transform:rotate(360deg)}}
+#catch-msg { font-size:10px; font-weight:900; color:var(--brown); text-align:center; }
+
+/* ── Battle UI bottom ── */
+#battle-ui {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding: 10px 12px;
+  gap: 8px;
+  overflow: hidden;
+}
+
+#battle-message {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.7;
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  min-height: 50px;
+  box-shadow: inset 0 1px 3px rgba(92,61,46,0.08);
+}
+
+#battle-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.battle-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 9px 6px;
+  border: 2.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--brown);
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 2px 2px 0 var(--border);
+  text-align:center;
+}
+.battle-btn:hover:not(:disabled) {
+  transform: translate(-1px,-1px);
+  box-shadow: 3px 3px 0 var(--border);
+  background: var(--sand);
+}
+.battle-btn:disabled { opacity:0.35; cursor:not-allowed; }
+.battle-btn.fight { border-color: var(--berry); }
+.battle-btn.bag   { border-color: var(--mango); }
+.battle-btn.swap  { border-color: var(--taro); }
+.battle-btn.run   { border-color: #aaa; }
+
+#move-menu { display:none; flex-direction:column; gap:6px; }
+#move-menu.visible { display:flex; }
+
+.move-btn {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--brown);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.1s;
+  box-shadow: 2px 2px 0 var(--border);
+}
+.move-btn:hover:not(:disabled) {
+  transform:translate(-1px,-1px);
+  box-shadow:3px 3px 0 var(--border);
+  background:var(--sand);
+}
+.move-btn:disabled{opacity:0.3;cursor:not-allowed}
+.move-type-tag {
+  font-size: 9px;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 10px;
+  color: white;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+.move-pp { font-size: 9px; font-weight: 700; color: var(--subtext); }
+
+#back-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  padding: 5px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--subtext);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.1s;
+}
+#back-btn:hover{color:var(--brown);background:var(--sand)}
+
+/* ══════════════════════════════
+   PARTY SCREEN
+══════════════════════════════ */
+#party-screen {
+  padding: 0;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.screen-header {
+  background: var(--brown);
+  color: var(--cream);
+  padding: 14px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  text-align: center;
+  letter-spacing: 1px;
+  border-bottom: 3px solid var(--deepbrown);
+  flex-shrink: 0;
+}
+
+.party-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.party-scroll::-webkit-scrollbar{width:4px}
+.party-scroll::-webkit-scrollbar-track{background:var(--cream)}
+.party-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+.cup-card {
+  background: var(--panel);
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 3px 3px 0 var(--border);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.cup-card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--border)}
+.cup-card.fainted{opacity:0.45}
+.cup-card .cup-emoji{font-size:40px;flex-shrink:0}
+.cup-card .cup-info{flex:1}
+.cup-card .cup-name{font-size:12px;font-weight:900;color:var(--brown);margin-bottom:2px}
+.cup-card .cup-meta{font-size:10px;color:var(--subtext);margin-bottom:6px}
+.cup-card .cup-hp{font-size:9px;font-weight:700;color:var(--subtext);margin-top:4px}
+.cup-card .moves-list{font-size:9px;color:var(--subtext);margin-top:3px}
+
+.screen-close-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 10px 20px;
+  border: 2.5px solid var(--berry);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--berry);
+  cursor: pointer;
+  margin: 10px 12px;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 var(--border);
+  transition: all 0.1s;
+  align-self: center;
+}
+.screen-close-btn:hover{background:var(--berry);color:white}
+
+/* ══════════════════════════════
+   ENCOUNTER FLASH
+══════════════════════════════ */
+#enc-flash {
+  position:fixed;
+  inset:0;
+  background: radial-gradient(circle, #fdf6ec, var(--blush));
+  display:none;
+  z-index:999;
+  pointer-events:none;
+}
+
+/* ══════════════════════════════
+   DAMAGE FLASH & SHAKE
+══════════════════════════════ */
+.hit-flash { animation: hitflash 0.5s; }
+@keyframes hitflash {
+  0%,100%{filter:drop-shadow(3px 3px 0 rgba(92,61,46,0.3))}
+  40%{filter:drop-shadow(0 0 18px white) brightness(3)}
+}
+.wobble { animation: wobble 0.4s; }
+@keyframes wobble {
+  0%,100%{transform:none}
+  20%,60%{transform:translateX(-8px) rotate(-5deg)}
+  40%,80%{transform:translateX(8px) rotate(5deg)}
+}
+
+/* ══════════════════════════════
+   D-PAD
+══════════════════════════════ */
+#dpad {
+  position:absolute;
+  bottom:78px;
+  right:10px;
+  display:grid;
+  grid-template-columns:repeat(3,30px);
+  grid-template-rows:repeat(3,30px);
+  gap:3px;
+  z-index:30;
+  opacity:0.75;
+}
+.dpad-btn {
+  background:rgba(92,61,46,0.18);
+  border:1.5px solid rgba(92,61,46,0.3);
+  border-radius:6px;
+  color:var(--brown);
+  font-size:13px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;
+  transition:background 0.1s;
+}
+.dpad-btn:active{background:rgba(92,61,46,0.4)}
+
+/* type colors for moves */
+.t-taro     { background: #c5a3d4; color: #3a2016; }
+.t-matcha   { background: #8fbc8b; color: #fff; }
+.t-mango    { background: #f5c842; color: #3a2016; }
+.t-strawberry { background: #f4a7b9; color: #5c3d2e; }
+.t-oolong   { background: #c8965c; color: #fff; }
+.t-coffee   { background: #5c3d2e; color: #fdf6ec; }
+.t-coconut  { background: #e8d5b7; color: #5c3d2e; }
+.t-blueberry{ background: #7b8fc8; color: #fff; }
+.t-lychee   { background: #f7d6e0; color: #5c3d2e; }
+.t-thai     { background: #e87c35; color: #fff; }
+
+</style>
+</head>
+<body>
+
+<div id="enc-flash"></div>
+
+<div id="game-wrap">
+<div id="game-container">
+
+<!-- ══ TITLE ══ -->
+<div id="title-screen" class="screen active">
+  <div class="title-boba">🧋</div>
+  <div class="shop-sign">
+    <h1>BOBA<br>QUEST</h1>
+    <p>~ NC Edition ~</p>
+  </div>
+  <div class="nc-badge">🌲 North Carolina 🌲</div>
+  <div class="title-flavor-row">
+    <div class="flavor-bubble">🧋</div>
+    <div class="flavor-bubble">🍵</div>
+    <div class="flavor-bubble">🥭</div>
+    <div class="flavor-bubble">🍓</div>
+    <div class="flavor-bubble">☕</div>
+  </div>
+  <div class="title-sub">Collect all flavors. Battle your buds.</div>
+  <div class="press-start">▶ TAP OR PRESS ANY KEY ◀</div>
+</div>
+
+<!-- ══ OVERWORLD ══ -->
+<div id="overworld-screen" class="screen">
+  <div id="map-viewport">
+    <canvas id="map-canvas"></canvas>
+    <div id="player-sprite">🐻</div>
+    <div id="message-box"><span id="msg-text"></span><span class="cont" id="msg-cont">▼</span></div>
+  </div>
+  <div id="overworld-hud">
+    <div class="hud-left">
+      <div id="location-label">📍 Bean's Boba Bar</div>
+      <div class="party-row" id="party-icons"></div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-stat">💰 <span id="gold-disp">300</span> pearls</div>
+      <div class="hud-stat">🥤 <span id="cups-disp">5</span> cups</div>
+      <button class="hud-btn" onclick="showPartyScreen()">📋 MENU</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BATTLE ══ -->
+<div id="battle-screen" class="screen">
+  <div id="battle-scene">
+    <div class="battle-bg"></div>
+    <div class="battle-window"></div>
+    <!-- Enemy info -->
+    <div class="battle-info-card" id="enemy-info">
+      <div class="card-name" id="e-name">???</div>
+      <div class="card-meta" id="e-meta">Lv.1 · Taro</div>
+      <div class="hp-row">
+        <span class="hp-tag">HP</span>
+        <div class="hp-bar"><div class="hp-fill" id="e-hp-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <!-- Enemy sprite -->
+    <div id="enemy-area"><span id="enemy-sprite">🧋</span></div>
+    <!-- Player sprite -->
+    <div id="player-battle-sprite">🧋</div>
+    <!-- Player info -->
+    <div class="battle-info-card" id="player-info">
+      <div class="card-name" id="p-name">-</div>
+      <div class="card-meta" id="p-meta">Lv.1</div>
+      <div class="hp-row">
+        <span class="hp-tag">HP</span>
+        <div class="hp-bar"><div class="hp-fill" id="p-hp-fill" style="width:100%"></div></div>
+      </div>
+      <div class="hp-nums" id="p-hp-nums">10/10</div>
+    </div>
+    <!-- Catch overlay -->
+    <div id="catch-overlay">
+      <div class="straw-spin">🥤</div>
+      <div id="catch-msg">Sipping up...</div>
+    </div>
+  </div>
+  <div id="battle-ui">
+    <div id="battle-message">A wild Boba appeared!</div>
+    <div id="battle-options">
+      <button class="battle-btn fight" onclick="openMoveMenu()">⚔ FIGHT</button>
+      <button class="battle-btn bag"   onclick="useCup()">🥤 COLLECT</button>
+      <button class="battle-btn swap"  onclick="showPartyScreen(true)">🧋 SWAP</button>
+      <button class="battle-btn run"   onclick="tryRun()">🏃 RUN</button>
+    </div>
+    <div id="move-menu"></div>
+    <button id="back-btn" onclick="showBattleMenu()" style="display:none">← back</button>
+  </div>
+</div>
+
+<!-- ══ PARTY ══ -->
+<div id="party-screen" class="screen">
+  <div class="screen-header">✦ YOUR COLLECTION ✦</div>
+  <div class="party-scroll" id="party-list"></div>
+  <button class="screen-close-btn" onclick="closePartyScreen()">CLOSE</button>
+</div>
+
+</div><!-- /game-container -->
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// BOBA DATA
+// ═══════════════════════════════════════════
+const BOBAS = {
+  taro_milk: {
+    name: 'Taro Milk Tea',
+    emoji: '🟣',
+    displayEmoji: '🧋',
+    flavor: 'taro',
+    color: '#c5a3d4',
+    desc: 'A creamy purple dream from Bean\'s back shelf.',
+    base: { hp:50, atk:55, def:60, spd:45 },
+    moves: ['Pearl Barrage','Taro Sweep','Creamy Shield','Purple Haze'],
+    evolveAt: 14, evolvesTo: 'ube_special',
+  },
+  ube_special: {
+    name: 'Ube Boba Special',
+    emoji: '💜',
+    displayEmoji: '🫧',
+    flavor: 'taro',
+    color: '#9b6ec8',
+    desc: 'Leveled-up taro — the pride of the Asheville menu.',
+    base: { hp:80, atk:85, def:90, spd:60 },
+    moves: ['Boba Blast','Taro Surge','Cream Armor','Ube Crush'],
+    evolveAt: null, evolvesTo: null,
+  },
+  matcha_latte: {
+    name: 'Matcha Latte',
+    emoji: '🍵',
+    displayEmoji: '🍵',
+    flavor: 'matcha',
+    color: '#8fbc8b',
+    desc: 'Zen energy sourced from the mountains of Durham.',
+    base: { hp:55, atk:70, def:50, spd:60 },
+    moves: ['Leaf Whip','Zen Focus','Green Surge','Ceremonial Blast'],
+    evolveAt: 14, evolvesTo: 'ceremonial_matcha',
+  },
+  ceremonial_matcha: {
+    name: 'Ceremonial Grade',
+    emoji: '🌿',
+    displayEmoji: '🌿',
+    flavor: 'matcha',
+    color: '#5a9e5a',
+    desc: 'Peak matcha energy. The tea masters bow.',
+    base: { hp:75, atk:105, def:70, spd:85 },
+    moves: ['Tornado Leaf','Matcha Cannon','Zen Aura','Solar Brew'],
+    evolveAt: null, evolvesTo: null,
+  },
+  mango_slush: {
+    name: 'Mango Slush',
+    emoji: '🥭',
+    displayEmoji: '🥭',
+    flavor: 'mango',
+    color: '#f5c842',
+    desc: 'Thick tropical power straight from Chapel Hill.',
+    base: { hp:45, atk:80, def:35, spd:80 },
+    moves: ['Tropical Splash','Mango Slam','Fruit Frenzy','Golden Rush'],
+    evolveAt: 14, evolvesTo: 'mango_tango',
+  },
+  mango_tango: {
+    name: 'Mango Tango Supreme',
+    emoji: '🌟',
+    displayEmoji: '🌟',
+    flavor: 'mango',
+    color: '#e8a200',
+    desc: 'Bright, bold, unstoppable. Raleigh\'s finest.',
+    base: { hp:70, atk:115, def:55, spd:105 },
+    moves: ['Sun Blast','Tango Slam','Mango Tornado','Sunrise Strike'],
+    evolveAt: null, evolvesTo: null,
+  },
+  strawberry_milk: {
+    name: 'Strawberry Milk Tea',
+    emoji: '🍓',
+    displayEmoji: '🍓',
+    flavor: 'strawberry',
+    color: '#f4a7b9',
+    desc: 'Sweet and sneaky. Caught near the NC State campus.',
+    base: { hp:60, atk:60, def:55, spd:70 },
+    moves: ['Berry Burst','Sweet Sting','Blushing Guard','Strawberry Storm'],
+    evolveAt: 14, evolvesTo: 'strawberry_cream',
+  },
+  strawberry_cream: {
+    name: 'Strawberry Cream Supreme',
+    emoji: '🌸',
+    displayEmoji: '🌸',
+    flavor: 'strawberry',
+    color: '#e06080',
+    desc: 'The ultimate berry boba — Charlotte is scared.',
+    base: { hp:85, atk:90, def:75, spd:90 },
+    moves: ['Berry Cyclone','Pink Thunder','Cream Crush','Blossom Blast'],
+    evolveAt: null, evolvesTo: null,
+  },
+  thai_tea: {
+    name: 'Thai Milk Tea',
+    emoji: '🧡',
+    displayEmoji: '🫖',
+    flavor: 'thai',
+    color: '#e87c35',
+    desc: 'Bold orange energy from a Greensboro food truck.',
+    base: { hp:65, atk:75, def:65, spd:55 },
+    moves: ['Spice Kick','Orange Crush','Thai Storm','Burning Sip'],
+    evolveAt: 16, evolvesTo: null,
+  },
+  oolong_classic: {
+    name: 'Classic Oolong',
+    emoji: '🫖',
+    displayEmoji: '🫖',
+    flavor: 'oolong',
+    color: '#c8965c',
+    desc: 'The wise ancient tea. Wandering the Blue Ridge.',
+    base: { hp:70, atk:65, def:75, spd:50 },
+    moves: ['Ancient Brew','Rock Steep','Mountain Drift','Tea Cyclone'],
+    evolveAt: null, evolvesTo: null,
+  },
+  cold_brew: {
+    name: 'Cold Brew Boba',
+    emoji: '☕',
+    displayEmoji: '☕',
+    flavor: 'coffee',
+    color: '#5c3d2e',
+    desc: 'Caffeine-powered menace roaming the Carrboro indie scene.',
+    base: { hp:50, atk:90, def:45, spd:90 },
+    moves: ['Espresso Shot','Caffeine Rush','Dark Roast','Nitro Blast'],
+    evolveAt: 16, evolvesTo: 'nitro_cold_brew',
+  },
+  nitro_cold_brew: {
+    name: 'Nitro Cold Brew',
+    emoji: '⚡',
+    displayEmoji: '⚡',
+    flavor: 'coffee',
+    color: '#2a1a0e',
+    desc: 'Maximum caffeine. Runs on pure Chapel Hill energy.',
+    base: { hp:75, atk:120, def:60, spd:115 },
+    moves: ['Nitro Surge','Black Lightning','Espresso Bomb','Overdrive'],
+    evolveAt: null, evolvesTo: null,
+  },
+  lychee_burst: {
+    name: 'Lychee Burst',
+    emoji: '🍈',
+    displayEmoji: '🍈',
+    flavor: 'lychee',
+    color: '#f7d6e0',
+    desc: 'Floral and fast. A Durham farmer\'s market favorite.',
+    base: { hp:40, atk:65, def:40, spd:105 },
+    moves: ['Flower Burst','Lychee Lunge','Petal Dodge','Blossom Rush'],
+    evolveAt: null, evolvesTo: null,
+  },
+  coconut_jelly: {
+    name: 'Coconut Jelly Tea',
+    emoji: '🥥',
+    displayEmoji: '🥥',
+    flavor: 'coconut',
+    color: '#e8d5b7',
+    desc: 'Smooth and slippery. Hard to pin down on the map.',
+    base: { hp:75, atk:50, def:90, spd:40 },
+    moves: ['Jelly Shield','Coconut Slam','Slippery Silk','Tropical Wall'],
+    evolveAt: null, evolvesTo: null,
+  },
+  blueberry_frost: {
+    name: 'Blueberry Frost',
+    emoji: '🫐',
+    displayEmoji: '🫐',
+    flavor: 'blueberry',
+    color: '#7b8fc8',
+    desc: 'Icy and mysterious. Spotted near Appalachian State.',
+    base: { hp:55, atk:70, def:55, spd:75 },
+    moves: ['Frost Burst','Berry Freeze','Ice Pearl','Blueberry Blizzard'],
+    evolveAt: null, evolvesTo: null,
+  },
+};
+
+const MOVES_DATA = {
+  // TARO
+  'Pearl Barrage':     { power:50, flavor:'taro',       pp:20, desc:'Fires a rapid barrage of tapioca pearls.' },
+  'Taro Sweep':        { power:65, flavor:'taro',       pp:15, desc:'A sweeping taro wave.' },
+  'Creamy Shield':     { power:0,  flavor:'taro',       pp:20, effect:'raise_def', desc:'Raises defense with creamy goodness.' },
+  'Purple Haze':       { power:80, flavor:'taro',       pp:10, desc:'A disorienting purple mist.' },
+  'Boba Blast':        { power:90, flavor:'taro',       pp:10, desc:'Concentrated boba power.' },
+  'Taro Surge':        { power:100,flavor:'taro',       pp:8,  desc:'Full taro surge.' },
+  'Cream Armor':       { power:0,  flavor:'taro',       pp:15, effect:'raise_def', desc:'Thick cream armor.' },
+  'Ube Crush':         { power:120,flavor:'taro',       pp:5,  desc:'The ultimate ube attack.' },
+  // MATCHA
+  'Leaf Whip':         { power:45, flavor:'matcha',     pp:25, desc:'A precise leaf strike.' },
+  'Zen Focus':         { power:0,  flavor:'matcha',     pp:20, effect:'raise_atk', desc:'Raises attack through focus.' },
+  'Green Surge':       { power:70, flavor:'matcha',     pp:15, desc:'A surge of green energy.' },
+  'Ceremonial Blast':  { power:90, flavor:'matcha',     pp:8,  desc:'A ceremonial power release.' },
+  'Tornado Leaf':      { power:85, flavor:'matcha',     pp:10, desc:'A leaf tornado.' },
+  'Matcha Cannon':     { power:110,flavor:'matcha',     pp:5,  desc:'Maximum matcha force.' },
+  'Zen Aura':          { power:0,  flavor:'matcha',     pp:15, effect:'raise_atk', desc:'Raises attack with zen energy.' },
+  'Solar Brew':        { power:130,flavor:'matcha',     pp:3,  desc:'Brewed by pure sunlight.' },
+  // MANGO
+  'Tropical Splash':   { power:50, flavor:'mango',      pp:20, desc:'A juicy tropical hit.' },
+  'Mango Slam':        { power:75, flavor:'mango',      pp:12, desc:'Slams with mango force.' },
+  'Fruit Frenzy':      { power:60, flavor:'mango',      pp:15, desc:'A chaotic fruit burst.' },
+  'Golden Rush':       { power:85, flavor:'mango',      pp:10, desc:'A blazing golden charge.' },
+  'Sun Blast':         { power:100,flavor:'mango',      pp:8,  desc:'The power of pure sunshine.' },
+  'Tango Slam':        { power:90, flavor:'mango',      pp:10, desc:'Rhythmic and hard-hitting.' },
+  'Mango Tornado':     { power:110,flavor:'mango',      pp:5,  desc:'A mango-infused tornado.' },
+  'Sunrise Strike':    { power:125,flavor:'mango',      pp:3,  desc:'Strike like dawn over the Smokies.' },
+  // STRAWBERRY
+  'Berry Burst':       { power:50, flavor:'strawberry', pp:20, desc:'A surprising berry explosion.' },
+  'Sweet Sting':       { power:60, flavor:'strawberry', pp:18, desc:'Deceptively sweet and sharp.' },
+  'Blushing Guard':    { power:0,  flavor:'strawberry', pp:20, effect:'raise_def', desc:'A rosy protective blush.' },
+  'Strawberry Storm':  { power:80, flavor:'strawberry', pp:10, desc:'A storm of strawberry sweetness.' },
+  'Berry Cyclone':     { power:95, flavor:'strawberry', pp:8,  desc:'A cyclone of berries.' },
+  'Pink Thunder':      { power:105,flavor:'strawberry', pp:6,  desc:'Sweet thunder — the worst kind.' },
+  'Cream Crush':       { power:85, flavor:'strawberry', pp:10, desc:'Crushed with creamy force.' },
+  'Blossom Blast':     { power:120,flavor:'strawberry', pp:4,  desc:'A full blossom explosion.' },
+  // THAI
+  'Spice Kick':        { power:55, flavor:'thai',       pp:20, desc:'A fiery spice kick.' },
+  'Orange Crush':      { power:70, flavor:'thai',       pp:15, desc:'Bold orange power.' },
+  'Thai Storm':        { power:90, flavor:'thai',       pp:8,  desc:'A sizzling Thai storm.' },
+  'Burning Sip':       { power:100,flavor:'thai',       pp:6,  desc:'One sip sets you on fire.' },
+  // OOLONG
+  'Ancient Brew':      { power:55, flavor:'oolong',     pp:20, desc:'Steeped for centuries.' },
+  'Rock Steep':        { power:70, flavor:'oolong',     pp:15, desc:'Steep like a mountain.' },
+  'Mountain Drift':    { power:0,  flavor:'oolong',     pp:20, effect:'lower_spd', desc:'Slows the enemy down.' },
+  'Tea Cyclone':       { power:95, flavor:'oolong',     pp:8,  desc:'A whirling tea force.' },
+  // COFFEE
+  'Espresso Shot':     { power:60, flavor:'coffee',     pp:20, desc:'A concentrated espresso blast.' },
+  'Caffeine Rush':     { power:0,  flavor:'coffee',     pp:18, effect:'raise_spd', desc:'Raises speed from pure caffeine.' },
+  'Dark Roast':        { power:80, flavor:'coffee',     pp:12, desc:'The darkest roast available.' },
+  'Nitro Blast':       { power:95, flavor:'coffee',     pp:8,  desc:'Nitro-charged impact.' },
+  'Nitro Surge':       { power:110,flavor:'coffee',     pp:6,  desc:'A nitrogen-powered surge.' },
+  'Black Lightning':   { power:120,flavor:'coffee',     pp:5,  desc:'Black and electrifying.' },
+  'Espresso Bomb':     { power:130,flavor:'coffee',     pp:3,  desc:'The atomic espresso.' },
+  'Overdrive':         { power:0,  flavor:'coffee',     pp:10, effect:'raise_spd', desc:'Maximum caffeine overdrive.' },
+  // LYCHEE
+  'Flower Burst':      { power:50, flavor:'lychee',     pp:25, desc:'A delicate floral burst.' },
+  'Lychee Lunge':      { power:65, flavor:'lychee',     pp:18, desc:'Fast and fragrant.' },
+  'Petal Dodge':       { power:0,  flavor:'lychee',     pp:20, effect:'raise_spd', desc:'Raises speed using petal grace.' },
+  'Blossom Rush':      { power:85, flavor:'lychee',     pp:10, desc:'Rush like a spring blossom.' },
+  // COCONUT
+  'Jelly Shield':      { power:0,  flavor:'coconut',    pp:20, effect:'raise_def', desc:'A thick jelly shield.' },
+  'Coconut Slam':      { power:65, flavor:'coconut',    pp:18, desc:'Hard coconut impact.' },
+  'Slippery Silk':     { power:0,  flavor:'coconut',    pp:15, effect:'lower_accuracy', desc:'Makes the enemy slip.' },
+  'Tropical Wall':     { power:0,  flavor:'coconut',    pp:15, effect:'raise_def', desc:'A sturdy tropical barrier.' },
+  // BLUEBERRY
+  'Frost Burst':       { power:55, flavor:'blueberry',  pp:22, desc:'An icy berry burst.' },
+  'Berry Freeze':      { power:70, flavor:'blueberry',  pp:15, desc:'Freezes with berry power.' },
+  'Ice Pearl':         { power:80, flavor:'blueberry',  pp:12, desc:'A frozen tapioca pearl.' },
+  'Blueberry Blizzard':{ power:100,flavor:'blueberry',  pp:6,  desc:'A full blueberry blizzard.' },
+};
+
+// Type effectiveness (flavor vs flavor)
+const FLAVOR_CHART = {
+  taro:       { coffee:1.5, strawberry:1.2, matcha:0.8 },
+  matcha:     { taro:1.5, coffee:0.8, oolong:1.2 },
+  mango:      { blueberry:1.5, coconut:1.2, strawberry:0.8 },
+  strawberry: { matcha:1.5, lychee:1.2, mango:0.9 },
+  thai:       { coconut:1.5, oolong:1.3, blueberry:0.8 },
+  oolong:     { taro:1.3, lychee:1.2, coffee:0.8 },
+  coffee:     { strawberry:1.5, matcha:1.3, oolong:1.2 },
+  lychee:     { mango:1.3, thai:1.2, taro:0.9 },
+  coconut:    { blueberry:1.4, coffee:0.9, taro:1.1 },
+  blueberry:  { thai:1.5, lychee:1.2, matcha:0.9 },
+};
+
+const FLAVOR_COLORS = {
+  taro:'#c5a3d4',matcha:'#8fbc8b',mango:'#f5c842',strawberry:'#f4a7b9',
+  thai:'#e87c35',oolong:'#c8965c',coffee:'#5c3d2e',lychee:'#f7d6e0',
+  coconut:'#e8d5b7',blueberry:'#7b8fc8',
+};
+
+// NC Locations and what bobas spawn there
+const LOCATIONS = [
+  { name:"Bean's Boba Bar, Raleigh",  color:'#c8a87a', tx:0.15,ty:0.55, wild:[] },
+  { name:'Carrboro Cup Corner',        color:'#a8d090', tx:0.10,ty:0.35, wild:['matcha_latte','cold_brew','lychee_burst'] },
+  { name:'Chapel Hill Sip Spot',       color:'#a8c8e8', tx:0.25,ty:0.40, wild:['mango_slush','strawberry_milk','cold_brew'] },
+  { name:'Durham Pearl District',      color:'#d4b090', tx:0.40,ty:0.30, wild:['taro_milk','oolong_classic','lychee_burst'] },
+  { name:'Asheville Mountain Brews',   color:'#b8d8c0', tx:0.08,ty:0.65, wild:['taro_milk','matcha_latte','blueberry_frost','oolong_classic'] },
+  { name:'Charlotte Boba Row',         color:'#e8c8a8', tx:0.35,ty:0.75, wild:['thai_tea','coconut_jelly','strawberry_milk','mango_slush'] },
+  { name:'Greensboro Pearl Garden',    color:'#d8c8e8', tx:0.55,ty:0.48, wild:['blueberry_frost','cold_brew','taro_milk'] },
+  { name:'Appalachian Frost Cup',      color:'#c8d8e8', tx:0.10,ty:0.20, wild:['blueberry_frost','oolong_classic','coconut_jelly'] },
+  { name:'Outer Banks Sip Shack',      color:'#a8e0f0', tx:0.85,ty:0.45, wild:['lychee_burst','coconut_jelly','mango_slush'] },
+];
+
+// ═══════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════
+let G = {
+  screen:'title',
+  gold:300, cups:5,
+  party:[],
+  player:{ tx:0.15, ty:0.55 },
+  steps:0,
+  currentBobaIdx:0,
+  enemy:null,
+  inBattle:false,
+  locationIdx:0,
+  battleReturnParty:false,
+};
+
+// ═══════════════════════════════════════════
+// BOBA FACTORY
+// ═══════════════════════════════════════════
+function makeBoba(id, level) {
+  const T = BOBAS[id];
+  const hp = Math.floor(T.base.hp * level / 10) + level + 10;
+  const b = {
+    id, level,
+    name: T.name,
+    emoji: T.displayEmoji,
+    flavor: T.flavor,
+    color: T.color,
+    hp, maxHp: hp,
+    atk: Math.floor(T.base.atk * level/10) + 5,
+    def: Math.floor(T.base.def * level/10) + 5,
+    spd: Math.floor(T.base.spd * level/10) + 5,
+    exp:0, expToNext: level*18+40,
+    moves: T.moves.slice(0,4),
+    pp:{}, fainted:false,
+    atkMod:1, defMod:1, spdMod:1, accMod:1,
+  };
+  b.moves.forEach(m => { b.pp[m] = MOVES_DATA[m]?.pp || 20; });
+  return b;
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.addEventListener('load', () => {
+  drawMap();
+  buildDpad();
+  document.addEventListener('keydown', e => {
+    if (G.screen==='title') { startGame(); return; }
+    if (G.screen==='overworld') {
+      const msgBox = document.getElementById('message-box');
+      if (msgBox.classList.contains('visible')) {
+        if (e.key==='Enter'||e.key===' ') advMsg(); return;
+      }
+      const dirs = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],
+                    w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
+      const d = dirs[e.key];
+      if (d) movePlayer(d[0],d[1]);
+    }
+  });
+  document.getElementById('title-screen').addEventListener('click', ()=>{ if(G.screen==='title') startGame(); });
+});
+
+function startGame() {
+  // Random starter
+  const starters = ['taro_milk','matcha_latte','strawberry_milk'];
+  const pick = starters[Math.floor(Math.random()*3)];
+  const starter = makeBoba(pick, 5);
+  G.party = [starter];
+  showScreen('overworld');
+  positionPlayerSprite();
+  updateHUD();
+  showMsg(`🌲 Welcome to Boba Quest NC!\nYou found a wild ${starter.name}!\nMr. Boba Bean is on the case! 🐻`, ()=>closeMsg());
+}
+
+// ═══════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════
+const TILE = 28;
+function drawMap() {
+  const canvas = document.getElementById('map-canvas');
+  const W = 580, H = 520;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // NC-shaped rough background
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,'#b8d8a0');
+  grad.addColorStop(0.4,'#c8e8b0');
+  grad.addColorStop(1,'#a8c890');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+
+  // Ocean to the right
+  const sea = ctx.createLinearGradient(W*0.65,0,W,0);
+  sea.addColorStop(0,'#c8e8b0');
+  sea.addColorStop(0.3,'#a8d8f0');
+  sea.addColorStop(1,'#78c8f0');
+  ctx.fillStyle = sea;
+  ctx.beginPath();
+  ctx.moveTo(W*0.70,0); ctx.lineTo(W,0); ctx.lineTo(W,H); ctx.lineTo(W*0.65,H); ctx.closePath();
+  ctx.fill();
+
+  // Mountains top-left
+  ctx.fillStyle = '#8faa80';
+  [[0.0,0.5],[0.06,0.15],[0.13,0.55],[0.18,0.10],[0.22,0.50]].forEach(([x,xt],i) => {
+    ctx.beginPath();
+    const bx = x*W, bw=60;
+    ctx.moveTo(bx, H*0.8);
+    ctx.lineTo(bx+bw/2, H*(xt));
+    ctx.lineTo(bx+bw, H*0.8);
+    ctx.fill();
+  });
+
+  // Grid roads
+  ctx.strokeStyle = 'rgba(180,140,100,0.5)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6,6]);
+  for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=70){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+  ctx.setLineDash([]);
+
+  // Location nodes
+  LOCATIONS.forEach((loc,i) => {
+    const lx = loc.tx*W, ly = loc.ty*H;
+    ctx.fillStyle = loc.color;
+    ctx.beginPath();
+    ctx.arc(lx,ly,16,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = '#5c3d2e';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Short label
+    ctx.fillStyle = '#3a2016';
+    ctx.font = 'bold 8px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    const shortName = loc.name.split(',')[0].replace("Bean's Boba Bar","Bean's Bar");
+    ctx.fillText(shortName.substring(0,16), lx, ly+26);
+  });
+
+  // Title
+  ctx.fillStyle = 'rgba(92,61,46,0.7)';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('🌲 North Carolina', 6, 14);
+}
+
+function positionPlayerSprite() {
+  const vp = document.getElementById('map-viewport');
+  const canvas = document.getElementById('map-canvas');
+  const ps = document.getElementById('player-sprite');
+  const W = canvas.width, H = canvas.height;
+  const vpW = vp.offsetWidth, vpH = vp.offsetHeight;
+
+  const wx = G.player.tx * W;
+  const wy = G.player.ty * H;
+
+  let camX = wx - vpW/2;
+  let camY = wy - vpH/2;
+  camX = Math.max(0, Math.min(camX, W - vpW));
+  camY = Math.max(0, Math.min(camY, H - vpH));
+
+  canvas.style.left = -camX+'px';
+  canvas.style.top  = -camY+'px';
+  ps.style.left = (wx-camX)+'px';
+  ps.style.top  = (wy-camY)+'px';
+}
+
+function movePlayer(dx, dy) {
+  const step = 0.07;
+  G.player.tx = Math.max(0.02, Math.min(0.95, G.player.tx + dx*step));
+  G.player.ty = Math.max(0.02, Math.min(0.95, G.player.ty + dy*step));
+
+  const ps = document.getElementById('player-sprite');
+  ps.classList.remove('step-anim');
+  void ps.offsetWidth;
+  ps.classList.add('step-anim');
+
+  positionPlayerSprite();
+  updateLocationName();
+  checkEncounter();
+}
+
+function updateLocationName() {
+  let best = null, bestDist = 999;
+  LOCATIONS.forEach((loc,i) => {
+    const d = Math.hypot(loc.tx - G.player.tx, loc.ty - G.player.ty);
+    if (d < bestDist) { bestDist=d; best=i; }
+  });
+  G.locationIdx = best;
+  document.getElementById('location-label').textContent = '📍 ' + LOCATIONS[best].name;
+}
+
+function checkEncounter() {
+  const loc = LOCATIONS[G.locationIdx];
+  if (!loc.wild.length) return;
+  G.steps++;
+  if (G.steps >= 7 && Math.random() < 0.28) {
+    G.steps = 0;
+    setTimeout(triggerBattle, 100);
+  }
+}
+
+// ═══════════════════════════════════════════
+// MESSAGES (overworld)
+// ═══════════════════════════════════════════
+let _msgCb = null;
+function showMsg(text, cb) {
+  document.getElementById('msg-text').textContent = text;
+  document.getElementById('message-box').classList.add('visible');
+  document.getElementById('msg-cont').style.display = cb ? 'inline' : 'none';
+  _msgCb = cb || null;
+}
+function closeMsg() {
+  document.getElementById('message-box').classList.remove('visible');
+  _msgCb = null;
+}
+function advMsg() {
+  if (_msgCb) { const cb=_msgCb; _msgCb=null; cb(); } else closeMsg();
+}
+
+// ═══════════════════════════════════════════
+// SCREEN MANAGER
+// ═══════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(name+'-screen').classList.add('active');
+  G.screen = name;
+}
+
+// ═══════════════════════════════════════════
+// BATTLE
+// ═══════════════════════════════════════════
+function triggerBattle() {
+  const loc = LOCATIONS[G.locationIdx];
+  const pool = loc.wild;
+  const id = pool[Math.floor(Math.random()*pool.length)];
+  const avgLv = Math.max(...G.party.map(m=>m.level));
+  const lv = Math.max(1, avgLv + Math.floor(Math.random()*6)-4);
+  G.enemy = makeBoba(id, lv);
+
+  G.currentBobaIdx = G.party.findIndex(m=>!m.fainted&&m.hp>0);
+  if (G.currentBobaIdx < 0) return;
+  G.inBattle = true;
+
+  // Flash
+  const flash = document.getElementById('enc-flash');
+  flash.style.display='block'; flash.style.opacity='1';
+  setTimeout(()=>{
+    flash.style.transition='opacity 0.35s'; flash.style.opacity='0';
+    setTimeout(()=>{flash.style.display='none';flash.style.transition='';},350);
+  },180);
+
+  showScreen('battle');
+  renderBattle();
+  setBattleMsg(`☕ A wild ${G.enemy.name} appeared\nnear ${LOCATIONS[G.locationIdx].name.split(',')[0]}!`);
+  showBattleMenu();
+}
+
+function renderBattle() {
+  const boba = G.party[G.currentBobaIdx];
+  const enemy = G.enemy;
+  document.getElementById('enemy-sprite').textContent = enemy.emoji;
+  document.getElementById('e-name').textContent = enemy.name;
+  document.getElementById('e-meta').textContent = `Lv.${enemy.level} · ${enemy.flavor}`;
+  document.getElementById('player-battle-sprite').textContent = boba.emoji;
+  document.getElementById('p-name').textContent = boba.name;
+  document.getElementById('p-meta').textContent = `Lv.${boba.level} · ${boba.flavor}`;
+  updateHPBars(boba, enemy);
+}
+
+function updateHPBars(boba, enemy) {
+  const epct = Math.max(0, enemy.hp/enemy.maxHp*100);
+  const ppct = Math.max(0, boba.hp/boba.maxHp*100);
+  document.getElementById('e-hp-fill').style.width = epct+'%';
+  const pf = document.getElementById('p-hp-fill');
+  pf.style.width = ppct+'%';
+  pf.className = 'hp-fill'+(ppct<=20?' low':ppct<=50?' mid':'');
+  document.getElementById('p-hp-nums').textContent = `${Math.max(0,boba.hp)}/${boba.maxHp}`;
+}
+
+function setBattleMsg(txt) { document.getElementById('battle-message').textContent = txt; }
+
+function showBattleMenu() {
+  document.getElementById('battle-options').style.display='grid';
+  document.getElementById('move-menu').classList.remove('visible');
+  document.getElementById('back-btn').style.display='none';
+  document.querySelectorAll('.battle-btn').forEach(b=>b.disabled=false);
+}
+
+function openMoveMenu() {
+  const boba = G.party[G.currentBobaIdx];
+  const menu = document.getElementById('move-menu');
+  menu.innerHTML='';
+  boba.moves.forEach(mName => {
+    const mv = MOVES_DATA[mName];
+    const pp = boba.pp[mName]||0;
+    const btn = document.createElement('button');
+    btn.className='move-btn';
+    btn.disabled = pp<=0;
+    const col = FLAVOR_COLORS[mv.flavor]||'#ccc';
+    btn.innerHTML=`<span>${mName}</span><span style="display:flex;gap:6px;align-items:center"><span class="move-type-tag" style="background:${col};color:${isDark(col)?'#fff':'#3a2016'}">${mv.flavor}</span><span class="move-pp">PP ${pp}</span></span>`;
+    btn.onclick=()=>playerAttack(mName);
+    menu.appendChild(btn);
+  });
+  document.getElementById('battle-options').style.display='none';
+  menu.classList.add('visible');
+  document.getElementById('back-btn').style.display='block';
+}
+
+function isDark(hex) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return (r*299+g*587+b*114)/1000 < 128;
+}
+
+function calcDmg(atk, def, move, attackerFlavor, defenderFlavor, isEnemy=false) {
+  const chart = FLAVOR_CHART[move.flavor]||{};
+  const typeMod = chart[defenderFlavor]||1.0;
+  const stab = attackerFlavor===move.flavor ? 1.5 : 1.0;
+  const roll = 0.85 + Math.random()*0.15;
+  const scalar = isEnemy ? 0.3825 : 0.45; // enemy hits 15% softer
+  return Math.max(1, Math.floor(move.power * (atk/def) * scalar * typeMod * stab * roll));
+}
+
+function playerAttack(mName) {
+  lockBtns();
+  const boba = G.party[G.currentBobaIdx];
+  const enemy = G.enemy;
+  const mv = MOVES_DATA[mName];
+  boba.pp[mName]--;
+
+  // Effect moves
+  if (mv.power===0 && mv.effect) {
+    applyEffect(boba, enemy, mv.effect, true);
+    setBattleMsg(`${boba.name} used ${mName}!`);
+    document.getElementById('player-battle-sprite').classList.add('wobble');
+    setTimeout(()=>{ document.getElementById('player-battle-sprite').classList.remove('wobble'); enemyTurn(); }, 1000);
+    return;
+  }
+
+  const dmg = calcDmg(boba.atk*boba.atkMod, enemy.def*enemy.defMod, mv, boba.flavor, enemy.flavor);
+  enemy.hp = Math.max(0, enemy.hp - dmg);
+  const effectiveness = getEffText(mv.flavor, enemy.flavor);
+
+  setBattleMsg(`${boba.name} used ${mName}!\n${effectiveness}(${dmg} dmg)`);
+  document.getElementById('enemy-sprite').classList.add('hit-flash');
+  setTimeout(()=>document.getElementById('enemy-sprite').classList.remove('hit-flash'),600);
+
+  setTimeout(()=>{
+    updateHPBars(boba, enemy);
+    if(enemy.hp<=0){ setTimeout(()=>endBattle('win'),800); return; }
+    setTimeout(enemyTurn, 700);
+  },600);
+}
+
+function getEffText(atkFlavor, defFlavor) {
+  const v = (FLAVOR_CHART[atkFlavor]||{})[defFlavor]||1;
+  if(v>=1.4) return "It's super effective! ";
+  if(v<=0.7) return "Not very effective... ";
+  return '';
+}
+
+function applyEffect(boba, enemy, effect, isPlayer) {
+  const target = isPlayer ? boba : enemy; // most effects target self or enemy
+  if(effect==='raise_atk') target.atkMod = Math.min(3, target.atkMod+0.5);
+  if(effect==='raise_def') target.defMod = Math.min(3, target.defMod+0.5);
+  if(effect==='raise_spd') target.spdMod = Math.min(3, target.spdMod+0.5);
+  if(effect==='lower_spd') { const t=isPlayer?enemy:boba; t.spdMod=Math.max(0.3,t.spdMod-0.4); }
+  if(effect==='lower_accuracy') { const t=isPlayer?enemy:boba; t.accMod=Math.max(0.3,t.accMod-0.3); }
+}
+
+function enemyTurn() {
+  const boba = G.party[G.currentBobaIdx];
+  const enemy = G.enemy;
+  const avail = enemy.moves.filter(m=>(enemy.pp[m]||0)>0);
+  if(!avail.length){ showBattleMenu(); return; }
+
+  const mName = avail[Math.floor(Math.random()*avail.length)];
+  const mv = MOVES_DATA[mName];
+  enemy.pp[mName]--;
+
+  if(Math.random() > (boba.accMod||1)) {
+    setBattleMsg(`${enemy.name} used ${mName}!\nMr. Boba Bean dodged it!`);
+    setTimeout(showBattleMenu, 900); return;
+  }
+
+  if(mv.power===0 && mv.effect) {
+    applyEffect(enemy, boba, mv.effect, false);
+    setBattleMsg(`${enemy.name} used ${mName}!`);
+    setTimeout(showBattleMenu,900); return;
+  }
+
+  const dmg = calcDmg(enemy.atk*enemy.atkMod, boba.def*boba.defMod, mv, enemy.flavor, boba.flavor, true);
+  boba.hp = Math.max(0, boba.hp - dmg);
+  setBattleMsg(`${enemy.name} used ${mName}!\n(${dmg} dmg to ${boba.name}!)`);
+  document.getElementById('player-battle-sprite').classList.add('wobble');
+  setTimeout(()=>document.getElementById('player-battle-sprite').classList.remove('wobble'),400);
+
+  setTimeout(()=>{
+    updateHPBars(boba, enemy);
+    if(boba.hp<=0){
+      boba.fainted=true;
+      setBattleMsg(`${boba.name} was emptied! 😢`);
+      setTimeout(()=>{
+        const next = G.party.findIndex((m,i)=>i!==G.currentBobaIdx&&!m.fainted&&m.hp>0);
+        if(next>=0){
+          G.currentBobaIdx=next; renderBattle();
+          setBattleMsg(`Go, ${G.party[next].name}!`);
+          setTimeout(showBattleMenu,800);
+        } else { setTimeout(()=>endBattle('lose'),800); }
+      },800);
+    } else { showBattleMenu(); }
+  },700);
+}
+
+function lockBtns() {
+  document.querySelectorAll('.battle-btn,.move-btn').forEach(b=>b.disabled=true);
+}
+
+function useCup() {
+  if(G.cups<=0){ setBattleMsg("You have no collection cups left!\nVisit Bean's Bar to restock!"); return; }
+  lockBtns();
+  G.cups--;
+  updateHUD();
+  const enemy = G.enemy;
+  document.getElementById('catch-overlay').classList.add('visible');
+  document.getElementById('catch-msg').textContent = `Pouring a cup for ${enemy.name}...`;
+
+  const hpPct = enemy.hp/enemy.maxHp;
+  const rate = Math.max(0.08, (1-hpPct)*0.72+0.12);
+  const caught = Math.random()<rate;
+
+  setTimeout(()=>{
+    if(caught){
+      document.getElementById('catch-msg').textContent=`🎉 ${enemy.name} joined your collection!`;
+      setTimeout(()=>{
+        document.getElementById('catch-overlay').classList.remove('visible');
+        if(G.party.length<6) G.party.push(enemy);
+        endBattle('caught');
+      },1600);
+    } else {
+      document.getElementById('catch-msg').textContent=`${enemy.name} wiggled free! 😤`;
+      setTimeout(()=>{
+        document.getElementById('catch-overlay').classList.remove('visible');
+        enemyTurn();
+      },1200);
+    }
+  },1800);
+}
+
+function tryRun() {
+  const boba = G.party[G.currentBobaIdx];
+  const chance = (boba.spd*boba.spdMod) / (G.enemy.spd+1) * 0.8 + 0.2;
+  if(Math.random()<chance){
+    endBattle('run');
+  } else {
+    setBattleMsg("Couldn't get away! The boba smells too good...");
+    lockBtns();
+    setTimeout(()=>enemyTurn(),800);
+  }
+}
+
+function endBattle(result) {
+  G.inBattle = false;
+  document.getElementById('catch-overlay').classList.remove('visible');
+
+  if(result==='win') {
+    const boba = G.party[G.currentBobaIdx];
+    const exp = G.enemy.level*14;
+    boba.exp += exp;
+    let msg = `🏆 ${boba.name} defeated ${G.enemy.name}!\n+${exp} EXP`;
+    const gold = G.enemy.level*6;
+    G.gold += gold;
+    msg += ` +${gold} pearls`;
+
+    if(boba.exp >= boba.expToNext) {
+      boba.level++; boba.exp=0; boba.expToNext=boba.level*18+40;
+      const T=BOBAS[boba.id];
+      boba.maxHp=Math.floor(T.base.hp*boba.level/10)+boba.level+10;
+      boba.hp=Math.min(boba.hp+12,boba.maxHp);
+      boba.atk=Math.floor(T.base.atk*boba.level/10)+5;
+      boba.def=Math.floor(T.base.def*boba.level/10)+5;
+      boba.spd=Math.floor(T.base.spd*boba.level/10)+5;
+      msg+=`\n${boba.name} leveled up to Lv.${boba.level}! 🌟`;
+
+      if(T.evolveAt && boba.level>=T.evolveAt && T.evolvesTo) {
+        const newT=BOBAS[T.evolvesTo];
+        boba.id=T.evolvesTo; boba.name=newT.name; boba.emoji=newT.displayEmoji;
+        boba.flavor=newT.flavor; boba.color=newT.color;
+        boba.moves=newT.moves.slice(0,4);
+        boba.moves.forEach(m=>{ boba.pp[m]=MOVES_DATA[m]?.pp||20; });
+        msg+=`\nWoah! It evolved into ${boba.name}! ✨`;
+      }
+    }
+    setBattleMsg(msg);
+    setTimeout(()=>{ showScreen('overworld'); updateHUD(); },2400);
+
+  } else if(result==='lose') {
+    setBattleMsg("All your bobas ran dry! 😢\nReturning to Bean's Bar...");
+    G.party.forEach(m=>{ m.hp=Math.floor(m.maxHp/2); m.fainted=false; m.atkMod=1;m.defMod=1;m.spdMod=1;m.accMod=1; });
+    G.player={tx:0.15,ty:0.55};
+    setTimeout(()=>{ showScreen('overworld'); positionPlayerSprite(); updateHUD(); updateLocationName(); },2200);
+
+  } else if(result==='caught') {
+    G.gold += G.enemy.level*4;
+    showScreen('overworld'); updateHUD();
+
+  } else if(result==='run') {
+    setBattleMsg("Slipped away! Bean lives to sip another day! 🧋");
+    setTimeout(()=>{ showScreen('overworld'); updateHUD(); },900);
+  }
+}
+
+// ═══════════════════════════════════════════
+// PARTY SCREEN
+// ═══════════════════════════════════════════
+let _partyFromBattle = false;
+function showPartyScreen(fromBattle=false) {
+  _partyFromBattle = fromBattle;
+  const list = document.getElementById('party-list');
+  list.innerHTML='';
+  G.party.forEach((boba,i)=>{
+    const card = document.createElement('div');
+    card.className='cup-card'+(boba.fainted?' fainted':'');
+    const ppct = Math.max(0,boba.hp/boba.maxHp*100);
+    const fillClass = ppct<=20?'low':ppct<=50?'mid':'';
+    card.innerHTML=`
+      <div class="cup-emoji">${boba.emoji}</div>
+      <div class="cup-info">
+        <div class="cup-name">${boba.name}</div>
+        <div class="cup-meta">Lv.${boba.level} · ${boba.flavor.toUpperCase()}</div>
+        <div class="hp-row"><span class="hp-tag">HP</span>
+          <div class="hp-bar"><div class="hp-fill ${fillClass}" style="width:${ppct}%"></div></div>
+        </div>
+        <div class="cup-hp">${Math.max(0,boba.hp)}/${boba.maxHp} · ATK:${boba.atk} DEF:${boba.def} SPD:${boba.spd}</div>
+        <div class="moves-list">Moves: ${boba.moves.join(' · ')}</div>
+      </div>`;
+    if(fromBattle && !boba.fainted && boba.hp>0 && i!==G.currentBobaIdx) {
+      card.onclick=()=>switchBoba(i);
+      card.title='Switch to this boba!';
+      card.style.borderColor='var(--taro)';
+    }
+    list.appendChild(card);
+  });
+  showScreen('party');
+}
+
+function switchBoba(idx) {
+  G.currentBobaIdx = idx;
+  showScreen('battle');
+  renderBattle();
+  setBattleMsg(`Go, ${G.party[idx].name}! 🧋`);
+  showBattleMenu();
+  setTimeout(()=>{
+    if(G.enemy&&G.enemy.hp>0){ lockBtns(); setTimeout(()=>enemyTurn(),700); }
+  },900);
+}
+
+function closePartyScreen() {
+  if(_partyFromBattle && G.inBattle) showScreen('battle');
+  else showScreen('overworld');
+}
+
+// ═══════════════════════════════════════════
+// HUD
+// ═══════════════════════════════════════════
+function updateHUD() {
+  document.getElementById('gold-disp').textContent = G.gold;
+  document.getElementById('cups-disp').textContent = G.cups;
+  const row = document.getElementById('party-icons');
+  row.innerHTML='';
+  G.party.forEach(boba=>{
+    const s=document.createElement('span');
+    s.className='party-icon'+(boba.fainted?' fainted':'');
+    s.textContent=boba.emoji;
+    s.title=`${boba.name} Lv.${boba.level} HP:${Math.max(0,boba.hp)}/${boba.maxHp}`;
+    s.onclick=()=>showPartyScreen();
+    row.appendChild(s);
+  });
+}
+
+// ═══════════════════════════════════════════
+// DPAD
+// ═══════════════════════════════════════════
+function buildDpad() {
+  const vp = document.getElementById('map-viewport');
+  const dpad = document.createElement('div');
+  dpad.id='dpad';
+  dpad.innerHTML=`
+    <div></div>
+    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(0,-1)">▲</button>
+    <div></div>
+    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(-1,0)">◄</button>
+    <div></div>
+    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(1,0)">►</button>
+    <div></div>
+    <button class="dpad-btn" onclick="if(G.screen==='overworld')movePlayer(0,1)">▼</button>
+    <div></div>`;
+  vp.appendChild(dpad);
+}
+
+// Touch support
+let _ts=null;
+document.addEventListener('touchstart',e=>{if(G.screen==='overworld')_ts={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!_ts||G.screen!=='overworld')return;
+  const dx=e.changedTouches[0].clientX-_ts.x,dy=e.changedTouches[0].clientY-_ts.y;
+  if(Math.abs(dx)>Math.abs(dy)){movePlayer(dx>0?1:-1,0);}else{movePlayer(0,dy>0?1:-1);}
+  _ts=null;
+},{passive:true});
+</script>
+</body>
+</html>
